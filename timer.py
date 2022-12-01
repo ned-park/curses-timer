@@ -20,9 +20,18 @@ def main(filename, argv):
         if opt == '-h':
             inHr = int(arg)
         elif opt == '-m':
-            inMin = int(arg)
+            min = int(arg)
+            inMin = min % 60
+            inHr += min // 60
         elif opt == '-s':
-            inSec = int(arg)
+            sec = int(arg)
+            inSec = sec % 60
+            min = sec // 60
+            if min > 60:
+                hours = min // 60
+                inHr += hours
+                min = min // 60
+                inMin += min
         else: 
             printUsage(filename)
 
@@ -35,8 +44,15 @@ def main(filename, argv):
                     out = str(hr).rjust(2, '0') + ':' + str(min).rjust(2, '0') + ':' + str(sec).rjust(2, '0')
                     scr.addstr(0, 0, out)
                     c = scr.getch()
-                    if c == 3 or c == 113: # Ctrl + c or 'q'
+                    if c == 3 or c == 113 or c == 27: # Ctrl + c or 'q'
                         raise KeyboardInterrupt
+                    elif c == 112 or c == 32: 
+                        scr.nodelay(0)
+                        scr.refresh()
+                        out = str(hr).rjust(2, '0') + ':' + str(min).rjust(2, '0') + ':' + str(sec).rjust(2, '0')
+                        scr.addstr(0, 0, out)
+                        c = scr.getch()
+                        scr.nodelay(1)
                     scr.refresh()
                     time.sleep(1)
                 inSec = 59
